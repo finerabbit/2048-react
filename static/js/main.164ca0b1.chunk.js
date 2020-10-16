@@ -1,0 +1,2 @@
+(this["webpackJsonp2048-react"]=this["webpackJsonp2048-react"]||[]).push([[0],{2:function(t,c,n){t.exports=n(3)},3:function(t,c,n){"use strict";n.r(c);n(0),n(5),n(9)},9:function(t,c,n){}},[[2,1,2]]]);
+//# sourceMappingURL=main.164ca0b1.chunk.js.map
