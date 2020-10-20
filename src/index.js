@@ -54,11 +54,11 @@ class Tile extends React.Component {
 				<div className="tile tile-32 tile-position-2-1">
 					<div className="tile-inner">32</div>
 				</div>
-				<div className="tile tile-64 tile-position-2-2">
+				<div className="tile tile-2048 tile-position-2-2">
 					<div className="tile-inner">64</div>
 				</div>
-				<div className="tile tile-128 tile-position-2-3">
-					<div className="tile-inner">128</div>
+				<div className="tile tile-1024 tile-position-2-3">
+					<div className="tile-inner">1024</div>
 				</div>
 				<div className="tile tile-256 tile-position-2-4">
 					<div className="tile-inner">256</div>
