@@ -74,10 +74,9 @@ class TileContainer extends React.Component {
 
 		const gameBoard = tiles.map((value, index) => {
 			if (value) {
-				return (
-					this.renderTile(index, value)
-				);
+				return (this.renderTile(index, value));
 			}
+			return null;
     });
 
 		return (
@@ -96,9 +95,37 @@ class GameContainer extends React.Component {
 			gameScore: 0
 		};
 
-		this.state.tiles[3] = 4;
-		this.state.tiles[8] = 2;
-		this.state.tiles[10] = 1024;
+		this.handleKeyPress = this.handleKeyPress.bind(this);
+	}
+
+	handleKeyPress(event) {
+		if (event.keyCode >= 37 && event.keyCode <= 40)
+			this.createNewTile();
+	}
+
+	componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyPress);
+  }
+  
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyPress);
+	}
+	
+	createNewTile() {
+		const tiles = this.state.tiles;
+		const blanks = extractBlank(tiles);
+		const random = getRandomNum(blanks.length);
+
+		if (random === -1) {
+			alert("Game over!");
+			return;
+		} else {
+			tiles[blanks[random]] = 2;
+			this.setState({
+				tiles: tiles,
+				gameScore: this.state.gameScore
+			});
+		}
 	}
 
 	render() {
@@ -107,6 +134,7 @@ class GameContainer extends React.Component {
 				<GridContainer />
 				<TileContainer
 					tiles={this.state.tiles}
+					onKeypress={this.handleKeypress}
 				/>
 			</div>
 		);
@@ -136,4 +164,17 @@ function getRandomNum(range) {
 	}
 
 	return -1;
+}
+
+// return new array with value 0 from original array
+function extractBlank(tiles) {
+	let blanks = [];
+
+	for (let i=0; i<tiles.length; i++) {
+		if (tiles[i] === 0) {
+			blanks.push(i);
+		}
+	}
+
+	return blanks;
 }
