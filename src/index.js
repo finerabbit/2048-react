@@ -46,7 +46,10 @@ class Tile extends React.Component {
 }
 
 class TileContainer extends React.Component {
-	renderTile(i,value,style) {		// style 0 : normal, style 1 : new tile, style 2 : merged tile
+	// i : index, value : number to display.
+	// style 0 : normal, style 1 : new tile, style 2 : merged tile.
+	// return value : tile component to display.
+	renderTile(i,value,style) {
 		const x = parseInt(i/4) + 1;
 		const y = i%4 + 1;
 		let tileCSS = "tile tile-" + value + " tile-position-" + x + "-" + y;
@@ -67,35 +70,44 @@ class TileContainer extends React.Component {
 	}
 
 	render() {
+		const tiles = this.props.tiles;
+
+		const gameBoard = tiles.map((value, index) => {
+			if (value) {
+				return (
+					this.renderTile(index, value)
+				);
+			}
+    });
+
 		return (
 			<div className="tile-container">
-				{this.renderTile(0,1024)}
-				{this.renderTile(1,2,1)}
-				{this.renderTile(2,4)}
-				{this.renderTile(3,16)}
-				{this.renderTile(4,32)}
-				{this.renderTile(5,64)}
-				{this.renderTile(6,1024)}
-				{this.renderTile(7,256)}
-				{this.renderTile(8,2)}
-				{this.renderTile(9,4)}
-				{this.renderTile(10,2048)}
-				{this.renderTile(11,8)}
-				{this.renderTile(12,128)}
-				{this.renderTile(13,512)}
-				{this.renderTile(14,4096,2)}
-				{this.renderTile(15,32)}
+				{gameBoard}
 			</div>
 		);
 	}
 }
 
-class Game extends React.Component {
+class GameContainer extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = { 
+			tiles: Array(16).fill(0),
+			gameScore: 0
+		};
+
+		this.state.tiles[3] = 4;
+		this.state.tiles[8] = 2;
+		this.state.tiles[10] = 1024;
+	}
+
 	render() {
 		return (
 			<div className="game-container">
 				<GridContainer />
-				<TileContainer />
+				<TileContainer
+					tiles={this.state.tiles}
+				/>
 			</div>
 		);
 	}
@@ -105,7 +117,7 @@ class Container extends React.Component {
 	render() {
 		return (
 			<div className="container">
-				<Game />
+				<GameContainer />
 			</div>
 		);
 	}
@@ -115,3 +127,13 @@ ReactDOM.render(
   <Container />,
 	document.getElementById('root')
 );
+
+// range : range to gerate random number.
+// return value : If success, return random number. If failed, return -1. 
+function getRandomNum(range) {
+	if (range > 0 && range <= 16) {
+		return (Math.floor(Math.random() * range));
+	}
+
+	return -1;
+}
