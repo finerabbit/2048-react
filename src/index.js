@@ -16,7 +16,7 @@ class GemaeMessage extends React.Component {
 		  <p>Game over!</p>
 		  <div class="lower">
 			  <a class="keep-playing-button">Keep going</a>
-			  <a class="retry-button">Try again</a>
+			  <a class="retry-button" onClick={this.props.onClick}>Try again</a>
 		  </div>
 	  </div>
     );
@@ -401,10 +401,10 @@ class GameContainer extends React.Component {
 	}
 
 	isGameOver() {
-		const indexArray = [0,3,5,6,9,10,12,15];
+		const indexArray = [0,1,3,4,5,6,7,9,10,12,13,15];
 		let	result = false;
 
-		for (let i=0; i<8; i++) {
+		for (let i=0; i<12; i++) {
 			if (this.isMoveable(indexArray[i])) {
 				result = true;
 				break;
@@ -417,6 +417,19 @@ class GameContainer extends React.Component {
 				gameOver: true,
 			});
 		}
+	}
+
+	tryAgain() {
+		this.state = { 
+			tiles: Array(16).fill(0),
+			styles: Array(16).fill(0),
+			gameOver: false,
+			gameScore: 0
+		};
+		moveState = false;
+
+		this.createNewTile();
+		this.createNewTile();
 	}
 
 	createNewTile() {
@@ -444,6 +457,7 @@ class GameContainer extends React.Component {
 			<div className="game-container">
         <GemaeMessage
           gameOver={this.state.gameOver}
+					onClick={() => this.tryAgain()}
         />
 				<GridContainer />
 				<TileContainer
