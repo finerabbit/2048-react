@@ -2,6 +2,27 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+class GemaeMessage extends React.Component {
+  render() {
+		const gameOver = this.props.gameOver;
+		let gameOverCSS = "game-message";
+
+		if (gameOver) {
+			gameOverCSS += " game-over";
+		}
+
+    return (
+      <div class={gameOverCSS}>
+		  <p>Game over!</p>
+		  <div class="lower">
+			  <a class="keep-playing-button">Keep going</a>
+			  <a class="retry-button">Try again</a>
+		  </div>
+	  </div>
+    );
+  }
+}
+
 class GridContainer extends React.Component {
 	render() {
 		return (
@@ -94,7 +115,6 @@ class GameContainer extends React.Component {
 		this.state = { 
 			tiles: Array(16).fill(0),
 			styles: Array(16).fill(0),
-			noBlank: false,
 			gameOver: false,
 			gameScore: 0
 		};
@@ -109,7 +129,6 @@ class GameContainer extends React.Component {
 		this.setState({
 			tiles: this.state.tiles,
 			styles: Array(16).fill(0),
-			noBlank: this.state.noBlank,
 			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
@@ -156,7 +175,6 @@ class GameContainer extends React.Component {
 		this.setState({
 			tiles: tiles,
 			styles: styles,
-			noBlank: this.state.noBlank,
 			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
@@ -203,7 +221,6 @@ class GameContainer extends React.Component {
 		this.setState({
 			tiles: tiles,
 			styles: styles,
-			noBlank: this.state.noBlank,
 			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
@@ -250,7 +267,6 @@ class GameContainer extends React.Component {
 		this.setState({
 			tiles: tiles,
 			styles: styles,
-			noBlank: this.state.noBlank,
 			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
@@ -297,7 +313,6 @@ class GameContainer extends React.Component {
 		this.setState({
 			tiles: tiles,
 			styles: styles,
-			noBlank: this.state.noBlank,
 			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
@@ -328,6 +343,10 @@ class GameContainer extends React.Component {
 			if (moveState) {
 				this.createNewTile();
 				moveState = false;
+			}
+
+			if (isFull(this.state.tiles)) {		// This is none-efficient.
+				this.isGameOver();
 			}
 		}
 	}
@@ -386,7 +405,7 @@ class GameContainer extends React.Component {
 		let	result = false;
 
 		for (let i=0; i<8; i++) {
-			if (this.isMergeable(indexArray[i])) {
+			if (this.isMoveable(indexArray[i])) {
 				result = true;
 				break;
 			}
@@ -401,37 +420,35 @@ class GameContainer extends React.Component {
 	}
 
 	createNewTile() {
-		if (!this.state.noBlank) {
-			const tiles = this.state.tiles;
-			const styles = this.state.styles;
-			let index = this.findBlank();
-			let noBlank = this.state.noBlank;
+		const tiles = this.state.tiles;
+		const styles = this.state.styles;
+		let index = this.findBlank();
 
-			if (index === -1) {		// There in no blanks.
-				noBlank = true;
-			} else {
-				tiles[index] = 2;
-				styles[index] = 1;
-			}
-
-			this.setState({
-				tiles: tiles,
-				styles: styles,
-				noBlank: noBlank,
-				gameOver: this.state.gameOver,
-				gameScore: this.state.gameScore
-			});
+		if (index === -1) {		// There in no blanks.
+			alert("No blank tiles");
+		} else {
+			tiles[index] = 2;
+			styles[index] = 1;
 		}
+
+		this.setState({
+			tiles: tiles,
+			styles: styles,
+			gameOver: this.state.gameOver,
+			gameScore: this.state.gameScore
+		});
 	}
 
 	render() {
 		return (
 			<div className="game-container">
+        <GemaeMessage
+          gameOver={this.state.gameOver}
+        />
 				<GridContainer />
 				<TileContainer
 					tiles={this.state.tiles}
 					styles={this.state.styles}
-					onKeypress={this.handleKeypress}
 				/>
 			</div>
 		);
@@ -476,4 +493,13 @@ function extractBlank(tiles) {
 	}
 
 	return blanks;
+}
+
+function isFull(tiles) {
+	for (let i=0; i<tiles.length; i++) {
+		if (tiles[i] === 0) {
+			return false;
+		}
+	}
+	return true;
 }

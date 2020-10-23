@@ -1,6 +1,28 @@
+body, html {
+	margin: 0;
+	padding: 0;
+	background: #faf8ef;
+	color: #776e65;
+	font-family: Raleway,"Helvetica Neue",Arial,sans-serif;
+	font-size: 18px;
+	overscroll-behavior: contain;
+}
+
 body {
 	margin: 30px 0;
-	background-color: #faf8ef;
+}
+
+a {
+	color: #776e65;
+	font-weight: 700;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+p {
+	margin-top: 0;
+	margin-bottom: 10px;
+	line-height: 1.65;
 }
 
 .container {
@@ -18,6 +40,84 @@ body {
 	-webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
 	box-sizing: border-box;
+}
+
+.game-container .game-message.game-over, .game-container .game-message.game-won {
+	display: block;
+}
+
+.game-container .game-message {
+	display: none;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(238,228,218,.5);
+	z-index: 100;
+	text-align: center;
+	-webkit-animation: fade-in .8s ease 1.2s;
+	-moz-animation: fade-in .8s ease 1.2s;
+	animation: fade-in .8s ease 1.2s;
+	-webkit-animation-fill-mode: both;
+	-moz-animation-fill-mode: both;
+	animation-fill-mode: both;
+}
+
+@-webkit-keyframes fade-in {
+	0% {
+		opacity:0
+	}
+	100% {
+		opacity:1
+	}
+}
+
+@-moz-keyframes fade-in {
+	0% {
+		opacity:0
+	}
+	100% {
+		opacity:1
+	}
+}
+
+@keyframes fade-in {
+	0% {
+		opacity:0
+	}
+	100% {
+		opacity:1
+	}
+}
+
+.game-container .game-message p {
+	font-size: 60px;
+	font-weight: 700;
+	height: 60px;
+	line-height: 60px;
+	margin-top: 222px;
+}
+
+.game-container .game-message .lower {
+	display: block;
+	margin-top: 59px;
+}
+
+.game-container .game-message a.keep-playing-button {
+	display: none;
+}
+
+.game-container .game-message a {
+	display: inline-block;
+	background: #ea4335;
+	border-radius: 3px;
+	padding: 0 20px;
+	text-decoration: none;
+	color: #f9f6f2;
+	height: 40px;
+	line-height: 42px;
+	margin-left: 9px;
 }
 
 .grid-container {
