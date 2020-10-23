@@ -95,6 +95,7 @@ class GameContainer extends React.Component {
 			tiles: Array(16).fill(0),
 			styles: Array(16).fill(0),
 			noBlank: false,
+			gameOver: false,
 			gameScore: 0
 		};
 		moveState = false;
@@ -109,6 +110,7 @@ class GameContainer extends React.Component {
 			tiles: this.state.tiles,
 			styles: Array(16).fill(0),
 			noBlank: this.state.noBlank,
+			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
 	}
@@ -155,6 +157,7 @@ class GameContainer extends React.Component {
 			tiles: tiles,
 			styles: styles,
 			noBlank: this.state.noBlank,
+			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
 	}
@@ -201,6 +204,7 @@ class GameContainer extends React.Component {
 			tiles: tiles,
 			styles: styles,
 			noBlank: this.state.noBlank,
+			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
 	}
@@ -247,6 +251,7 @@ class GameContainer extends React.Component {
 			tiles: tiles,
 			styles: styles,
 			noBlank: this.state.noBlank,
+			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
 	}
@@ -293,12 +298,15 @@ class GameContainer extends React.Component {
 			tiles: tiles,
 			styles: styles,
 			noBlank: this.state.noBlank,
+			gameOver: this.state.gameOver,
 			gameScore: this.state.gameScore
 		});
 	}
 
 	handleKeyPress(event) {
-		if (event.keyCode >= 37 && event.keyCode <= 40) {
+		const	gameOver = this.state.gameOver;
+
+		if (!gameOver && event.keyCode >= 37 && event.keyCode <= 40) {
 			this.clearStyles();		// this have a little problem.
 			switch (event.keyCode) {
 				case 37:	// press left arrow key.
@@ -345,6 +353,53 @@ class GameContainer extends React.Component {
 		return blanks[random];
 	}
 
+	isMergeable(index1, index2) {
+		const tiles = this.state.tiles;
+
+		if (index1 >= 0 && index1 < 16) {
+			return (tiles[index1]===tiles[index2]);
+		}
+
+		return false;
+	}
+
+	// find mergeable tiles.
+	isMoveable(index) {
+		const indexArray = [];
+		
+		indexArray[0] = index - 4;
+		indexArray[1] = index + 4;
+		indexArray[2] = index - 1;
+		indexArray[3] = index + 1;
+
+		for (let i=0; i<4; i++) {
+			if (this.isMergeable(indexArray[i], index)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	isGameOver() {
+		const indexArray = [0,3,5,6,9,10,12,15];
+		let	result = false;
+
+		for (let i=0; i<8; i++) {
+			if (this.isMergeable(indexArray[i])) {
+				result = true;
+				break;
+			}
+		}
+
+		// there is no movable tiles.
+		if (!result) {
+			this.setState({
+				gameOver: true,
+			});
+		}
+	}
+
 	createNewTile() {
 		if (!this.state.noBlank) {
 			const tiles = this.state.tiles;
@@ -363,6 +418,7 @@ class GameContainer extends React.Component {
 				tiles: tiles,
 				styles: styles,
 				noBlank: noBlank,
+				gameOver: this.state.gameOver,
 				gameScore: this.state.gameScore
 			});
 		}

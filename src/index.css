@@ -57,20 +57,38 @@ body {
 	z-index: 2;
 }
 
+.tile, .tile .tile-inner {
+	width: 107px;
+	height: 107px;
+	line-height: 107px;
+}
+
 .tile {
 	position: absolute;
+	top: 0;
+	left: 0;
 	-webkit-transition: .1s ease-in-out;
 	-moz-transition: .1s ease-in-out;
 	transition: .1s ease-in-out;
 	-webkit-transition-property: -webkit-transform;
 	-moz-transition-property: -moz-transform;
-	transition-property: transform;
+	transition-property: all;
 }
 
-.tile, .tile .tile-inner {
-	width: 107px;
-	height: 107px;
-	line-height: 107px;
+.tile-inner strong:first-child {
+	color:#ea4335;
+}
+
+.tile-inner strong:nth-child(2) {
+	color:#34a853;
+}
+
+.tile-inner strong:nth-child(3) {
+	color:#fbbc05;
+}
+
+.tile-inner strong:nth-child(4) {
+	color:#4285f4
 }
 
 .tile.tile-position-1-1 {
@@ -173,14 +191,14 @@ body {
 
 .tile.tile-position-4-3 {
 	-webkit-transform: translate(363px,242px);
-  -moz-transform: translate(363px,242px);
+	-moz-transform: translate(363px,242px);
 	-ms-transform: translate(363px,242px);
 	transform: translate(363px,242px);
 }
 
 .tile.tile-position-4-4 {
 	-webkit-transform: translate(363px,363px);
-  -moz-transform: translate(363px,363px);
+	-moz-transform: translate(363px,363px);
 	-ms-transform: translate(363px,363px);
 	transform: translate(363px,363px);
 }
@@ -267,6 +285,40 @@ body {
 	animation-fill-mode: backwards;
 }
 
+@-webkit-keyframes appear {
+	0% {
+		opacity:0;
+		-webkit-transform:scale(0);
+		-moz-transform:scale(0);
+		-ms-transform:scale(0);
+		transform:scale(0)
+	}
+	100% {
+		opacity:1;
+		-webkit-transform:scale(1);
+		-moz-transform:scale(1);
+		-ms-transform:scale(1);
+		transform:scale(1)
+	}
+}
+
+@-moz-keyframes appear {
+	0% {
+		opacity:0;
+		-webkit-transform:scale(0);
+		-moz-transform:scale(0);
+		-ms-transform:scale(0);
+		transform:scale(0)
+	}
+	100% {
+		opacity:1;
+		-webkit-transform:scale(1);
+		-moz-transform:scale(1);
+		-ms-transform:scale(1);
+		transform:scale(1)
+	}
+}
+
 @keyframes appear {
 	0% {
 		opacity:0;
@@ -292,6 +344,48 @@ body {
 	-webkit-animation-fill-mode: backwards;
 	-moz-animation-fill-mode: backwards;
 	animation-fill-mode: backwards;
+}
+
+@-webkit-keyframes pop {
+	0% {
+		-webkit-transform:scale(0);
+		-moz-transform:scale(0);
+		-ms-transform:scale(0);
+		transform:scale(0)
+	}
+	50% {
+		-webkit-transform:scale(1.2);
+		-moz-transform:scale(1.2);
+		-ms-transform:scale(1.2);
+		transform:scale(1.2)
+	}
+	100% {
+		-webkit-transform:scale(1);
+		-moz-transform:scale(1);
+		-ms-transform:scale(1);
+		transform:scale(1)
+	}
+}
+
+@-moz-keyframes pop {
+	0% {
+		-webkit-transform:scale(0);
+		-moz-transform:scale(0);
+		-ms-transform:scale(0);
+		transform:scale(0)
+	}
+	50% {
+		-webkit-transform:scale(1.2);
+		-moz-transform:scale(1.2);
+		-ms-transform:scale(1.2);
+		transform:scale(1.2)
+	}
+	100% {
+		-webkit-transform:scale(1);
+		-moz-transform:scale(1);
+		-ms-transform:scale(1);
+		transform:scale(1)
+	}
 }
 
 @keyframes pop {
