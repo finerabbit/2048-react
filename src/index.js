@@ -12,11 +12,11 @@ class GemaeMessage extends React.Component {
 		}
 
     return (
-      <div class={gameOverCSS}>
+      <div className={gameOverCSS}>
 		  <p>Game over!</p>
-		  <div class="lower">
-			  <a class="keep-playing-button">Keep going</a>
-			  <a class="retry-button" onClick={this.props.onClick}>Try again</a>
+		  <div className="lower">
+			  <a className="keep-playing-button">Keep going</a>
+			  <a className="retry-button" onClick={this.props.onClick}>Try again</a>
 		  </div>
 	  </div>
     );
@@ -112,17 +112,27 @@ class TileContainer extends React.Component {
 class GameContainer extends React.Component {
 	constructor(props) {
 		super(props);
+
+		const tiles = Array(16).fill(0);
+		const styles = Array(16).fill(0);
+
+		let index = this.findBlank(tiles);
+		tiles[index] = 2;
+		styles[index] = 1;
+		index = this.findBlank(tiles);
+		tiles[index] = 2;
+		styles[index] = 1;
+
 		this.state = { 
-			tiles: Array(16).fill(0),
-			styles: Array(16).fill(0),
+			tiles: tiles,
+			styles: styles,
 			gameOver: false,
 			gameScore: 0
 		};
 		moveState = false;
 
-		this.createNewTile();
-		this.createNewTile();
 		this.handleKeyPress = this.handleKeyPress.bind(this);
+		this.tryAgain = this.tryAgain.bind(this);
 	}
 
 	clearStyles() {
@@ -360,8 +370,7 @@ class GameContainer extends React.Component {
 	}
 
 	// return blank position in state.tiles array.
-	findBlank() {
-		const tiles = this.state.tiles;
+	findBlank(tiles) {
 		const blanks = extractBlank(tiles);
 		const random = getRandomNum(blanks.length);
 
@@ -372,28 +381,23 @@ class GameContainer extends React.Component {
 		return blanks[random];
 	}
 
-	isMergeable(index1, index2) {
-		const tiles = this.state.tiles;
-
-		if (index1 >= 0 && index1 < 16) {
-			return (tiles[index1]===tiles[index2]);
-		}
-
-		return false;
-	}
-
 	// find mergeable tiles.
-	isMoveable(index) {
-		const indexArray = [];
-		
-		indexArray[0] = index - 4;
-		indexArray[1] = index + 4;
-		indexArray[2] = index - 1;
-		indexArray[3] = index + 1;
+	isMoveable() {
+		const tiles = this.state.tiles;
+		let index1, index2;
 
-		for (let i=0; i<4; i++) {
-			if (this.isMergeable(indexArray[i], index)) {
-				return true;
+		for (let i=0; i<3; i++) {
+			for (let j=0; j<4; j++) {
+				index1 = i*4 + j;
+				index2 = (i+1)*4 + j;
+				if (tiles[index1] === tiles[index2]) {
+					return true;
+				}
+				index1 = j*4 + i;
+				index2 = j*4 + i + 1;
+				if (tiles[index1] === tiles[index2]) {
+					return true;
+				}
 			}
 		}
 
@@ -401,41 +405,41 @@ class GameContainer extends React.Component {
 	}
 
 	isGameOver() {
-		const indexArray = [0,1,3,4,5,6,7,9,10,12,13,15];
-		let	result = false;
-
-		for (let i=0; i<12; i++) {
-			if (this.isMoveable(indexArray[i])) {
-				result = true;
-				break;
-			}
-		}
-
 		// there is no movable tiles.
-		if (!result) {
+		if (!this.isMoveable()) {
 			this.setState({
+				tiles: this.state.tiles,
+				styles: this.state.styles,
 				gameOver: true,
+				gameScore: this.state.gameScore
 			});
 		}
 	}
 
 	tryAgain() {
-		this.state = { 
-			tiles: Array(16).fill(0),
-			styles: Array(16).fill(0),
+		const tiles = Array(16).fill(0);
+		const styles = Array(16).fill(0);
+
+		let index = this.findBlank(tiles);
+		tiles[index] = 2;
+		styles[index] = 1;
+		index = this.findBlank(tiles);
+		tiles[index] = 2;
+		styles[index] = 1;
+
+		this.setState({
+			tiles: tiles,
+			styles: styles,
 			gameOver: false,
 			gameScore: 0
-		};
+		});
 		moveState = false;
-
-		this.createNewTile();
-		this.createNewTile();
 	}
 
 	createNewTile() {
 		const tiles = this.state.tiles;
 		const styles = this.state.styles;
-		let index = this.findBlank();
+		let index = this.findBlank(tiles);
 
 		if (index === -1) {		// There in no blanks.
 			alert("No blank tiles");
@@ -510,10 +514,5 @@ function extractBlank(tiles) {
 }
 
 function isFull(tiles) {
-	for (let i=0; i<tiles.length; i++) {
-		if (tiles[i] === 0) {
-			return false;
-		}
-	}
-	return true;
+	return tiles.every((value) => {return value !== 0;});
 }
