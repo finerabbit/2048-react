@@ -2,6 +2,29 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+function Heading() {
+	return (
+		<div className="heading">
+			<h1 className="title">
+				<a href="#">
+					<strong>2</strong>
+					<strong>0</strong>
+					<strong>4</strong>
+					<strong>8</strong>
+				</a>
+			</h1>
+		</div>
+	);
+}
+
+function ControlButtions(props) {
+	return (
+		<div className="control-buttons">
+			<a className="restart-button control-button">New Game</a>
+		</div>
+	);
+}
+
 class GemaeMessage extends React.Component {
   render() {
 		const gameOver = this.props.gameOver;
@@ -477,7 +500,9 @@ class Container extends React.Component {
 	render() {
 		return (
 			<div className="container">
+				<Heading />
 				<GameContainer />
+				<ControlButtions />
 			</div>
 		);
 	}

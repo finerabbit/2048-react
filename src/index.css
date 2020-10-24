@@ -30,6 +30,36 @@ p {
 	margin: 0 auto;
 }
 
+.heading:after {
+	content: "";
+	display: block;
+	clear: both;
+}
+
+h1.title {
+	font-size: 80px;
+	font-weight: 700;
+	margin: 0;
+	display: block;
+	float: left;
+}
+
+h1.title strong:first-child {
+	color: #ea4335;
+}
+
+h1.title strong:nth-child(2) {
+	color: #34a853;
+}
+
+h1.title strong:nth-child(3) {
+	color: #fbbc05;
+}
+
+h1.title strong:nth-child(4) {
+	color: #4285f4;
+}
+
 .game-container {
 	position: relative;
 	padding: 15px;
@@ -519,4 +549,28 @@ p {
 
 .control-buttons {
 	margin-top: 10px;
+}
+
+.control-buttons::after {
+	display: block;
+	content: "";
+	clear: both;
+}
+
+.restart-button {
+	float: right;
+}
+
+.control-button {
+	box-sizing: border-box;
+	background: #ea4335;
+	border-radius: 3px;
+	padding: 0 10px;
+	text-decoration: none;
+	color: #fff;
+	height: 40px;
+	line-height: 42px;
+	display: block;
+	text-align: center;
+	width: 30%;
 }
