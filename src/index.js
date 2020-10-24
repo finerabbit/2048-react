@@ -2,15 +2,39 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+var moveState;
+
+// range : range to gerate random number.
+// return value : If success, return random number. If failed, return -1. 
+function getRandomNum(range) {
+	if (range > 0 && range <= 16) {
+		return (Math.floor(Math.random() * range));
+	}
+	return -1;
+}
+
+// return new array with value 0 from original array
+function extractBlank(tiles) {
+	let blanks = [];
+
+	for (let i=0; i<tiles.length; i++) {
+		if (tiles[i] === 0) {
+			blanks.push(i);
+		}
+	}
+	return blanks;
+}
+
+function isFull(tiles) {
+	return tiles.every((value) => {return value !== 0;});
+}
+
 function Heading() {
 	return (
 		<div className="heading">
 			<h1 className="title">
 				<a href="#">
-					<strong>2</strong>
-					<strong>0</strong>
-					<strong>4</strong>
-					<strong>8</strong>
+					<strong>2</strong><strong>0</strong><strong>4</strong><strong>8</strong>
 				</a>
 			</h1>
 		</div>
@@ -47,46 +71,34 @@ class GemaeMessage extends React.Component {
 }
 
 class GridContainer extends React.Component {
+	renderGridRow() {
+		return (
+			<div className="grid-row">
+				<div className="grid-cell"></div>
+				<div className="grid-cell"></div>
+				<div className="grid-cell"></div>
+				<div className="grid-cell"></div>
+			</div>
+		);
+	}
 	render() {
 		return (
 			<div className="grid-container">
-				<div className="grid-row">
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-				</div>
-				<div className="grid-row">
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-				</div>
-				<div className="grid-row">
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-				</div>
-				<div className="grid-row">
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-					<div className="grid-cell"></div>
-				</div>
+				{this.renderGridRow()}
+				{this.renderGridRow()}
+				{this.renderGridRow()}
+				{this.renderGridRow()}
 			</div>
 		);
 	}
 }
 
-class Tile extends React.Component {
-	render() {
-		return (
-			<div className={this.props.tileCSS}>
-				<div className={this.props.tileInner}>{this.props.value}</div>
-			</div>
-		);
-	}
+function Tile(props) {
+	return (
+		<div className={props.tileCSS}>
+			<div className={props.tileInner}>{props.value}</div>
+		</div>
+	);
 }
 
 class TileContainer extends React.Component {
@@ -106,6 +118,7 @@ class TileContainer extends React.Component {
 
 		return (
 			<Tile
+				key={i}
 				tileCSS={tileCSS}
 				tileInner={"tile-inner"}
 				value={value}
@@ -114,12 +127,9 @@ class TileContainer extends React.Component {
 	}
 
 	render() {
-		const tiles = this.props.tiles;
-		const styles = this.props.styles;
-
-		const gameBoard = tiles.map((value, index) => {
+		const gameBoard = this.props.tiles.map((value, index) => {
 			if (value) {
-				return (this.renderTile(index, value, styles[index]));
+				return (this.renderTile(index, value, this.props.styles[index]));
 			}
 			return null;
     });
@@ -135,20 +145,10 @@ class TileContainer extends React.Component {
 class GameContainer extends React.Component {
 	constructor(props) {
 		super(props);
-
-		const tiles = Array(16).fill(0);
-		const styles = Array(16).fill(0);
-
-		let index = this.findBlank(tiles);
-		tiles[index] = 2;
-		styles[index] = 1;
-		index = this.findBlank(tiles);
-		tiles[index] = 2;
-		styles[index] = 1;
-
+		const newTiles = this.startTiles();
 		this.state = { 
-			tiles: tiles,
-			styles: styles,
+			tiles: newTiles[0],
+			styles: newTiles[1],
 			gameOver: false,
 			gameScore: 0
 		};
@@ -167,12 +167,61 @@ class GameContainer extends React.Component {
 		});
 	}
 
-	pressLeft() {
+	startTiles() {
+		const tiles = Array(16).fill(0);
+		const styles = Array(16).fill(0);
+	
+		let index = this.findBlank(tiles);
+		tiles[index] = 2;
+		styles[index] = 1;
+		index = this.findBlank(tiles);
+		tiles[index] = 2;
+		styles[index] = 1;
+
+		return [tiles, styles];
+	}
+
+	rotateLeft(tiles, styles) {
+		let newTiles = Array(16).fill(0);
+		let newStyles = Array(16).fill(0);
+
+		for (let i=0; i<4; i++) {
+			for (let j=0; j<4; j++) {
+				newTiles[i*4+3-j] = tiles[j*4+i];
+				newStyles[i*4+3-j] = tiles[j*4+i];
+			}
+		}
+
+		return [newTiles, newStyles];
+	}
+
+	rotateRight(tiles, styles) {
+		let newTiles = Array(16).fill(0);
+		let newStyles = Array(16).fill(0);
+
+		for (let i=0; i<4; i++) {
+			for (let j=0; j<4; j++) {
+				newTiles[j*4+i] = tiles[i*4+3-j];
+				newStyles[j*4+i] = tiles[i*4+3-j];
+			}
+		}
+
+		return [newTiles, newStyles];
+	}
+
+	handleLeft(direction) {
+		let rotated;
 		let tiles = this.state.tiles;
 		let styles = this.state.styles;
 
+		for (let i=0; i<direction; ++i) {
+			rotated = this.rotateLeft(tiles, styles);
+			tiles = rotated[0];
+			styles = rotated[1];
+		}
+
 		// Make adding tiles and move tiles left.
-		for (let i=0; i<4; i++) {
+		for (let i=0; i<4; ++i) {
 			for (let j=0; j<4; j++) {
 				let index = (j*4) + i;
 				if (tiles[index] !== 0) {
@@ -205,142 +254,10 @@ class GameContainer extends React.Component {
 			}
 		}
 
-		this.setState({
-			tiles: tiles,
-			styles: styles,
-			gameOver: this.state.gameOver,
-			gameScore: this.state.gameScore
-		});
-	}
-
-	pressRight() {
-		let tiles = this.state.tiles;
-		let styles = this.state.styles;
-
-		// Make adding tiles and move tiles right.
-		for (let i=0; i<4; i++) {
-			for (let j=3; j>=0; j--) {
-				let index = (j*4) + i;
-				if (tiles[index] !== 0) {
-					for (let k=j-1; k>=0; k--) {
-						let jndex = (k*4) + i;
-						if (tiles[jndex] !== 0) {
-							if (tiles[index] === tiles[jndex]) {
-								tiles[index] = tiles[index] * 2;
-								styles[index] = 2;
-								tiles[jndex] = 0;
-								styles[jndex] = 0;
-								moveState = true;
-							}
-							break;
-						}
-					}
-
-					for (let k=3; k>j; k--) {
-						let jndex = (k*4) + i;
-						if (tiles[jndex] === 0) {
-							tiles[jndex] = tiles[index];
-							styles[jndex] = styles[index];
-							tiles[index] = 0;
-							styles[index] = 0;
-							moveState = true;
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		this.setState({
-			tiles: tiles,
-			styles: styles,
-			gameOver: this.state.gameOver,
-			gameScore: this.state.gameScore
-		});
-	}
-
-	pressUp() {
-		let tiles = this.state.tiles;
-		let styles = this.state.styles;
-
-		// Make adding tiles and move tiles left.
-		for (let i=0; i<4; i++) {
-			for (let j=0; j<4; j++) {
-				let index = (i*4) + j;
-				if (tiles[index] !== 0) {
-					for (let k=j+1; k<4; k++) {
-						let jndex = (i*4) + k;
-						if (tiles[jndex] !== 0) {
-							if (tiles[index] === tiles[jndex]) {
-								tiles[index] = tiles[index] * 2;
-								styles[index] = 2;
-								tiles[jndex] = 0;
-								styles[jndex] = 0;
-								moveState = true;
-							}
-							break;
-						}
-					}
-
-					for (let k=0; k<j; k++) {
-						let jndex = (i*4) + k;
-						if (tiles[jndex] === 0) {
-							tiles[jndex] = tiles[index];
-							styles[jndex] = styles[index];
-							tiles[index] = 0;
-							styles[index] = 0;
-							moveState = true;
-							break;
-						}
-					}
-				}
-			}
-		}
-		
-		this.setState({
-			tiles: tiles,
-			styles: styles,
-			gameOver: this.state.gameOver,
-			gameScore: this.state.gameScore
-		});
-	}
-
-	pressDown() {
-		let tiles = this.state.tiles;
-		let styles = this.state.styles;
-
-		// Make adding tiles and move tiles right.
-		for (let i=0; i<4; i++) {
-			for (let j=3; j>=0; j--) {
-				let index = (i*4) + j;
-				if (tiles[index] !== 0) {
-					for (let k=j-1; k>=0; k--) {
-						let jndex = (i*4) + k;
-						if (tiles[jndex] !== 0) {
-							if (tiles[index] === tiles[jndex]) {
-								tiles[index] = tiles[index] * 2;
-								styles[index] = 2;
-								tiles[jndex] = 0;
-								styles[jndex] = 0;
-								moveState = true;
-							}
-							break;
-						}
-					}
-
-					for (let k=3; k>j; k--) {
-						let jndex = (i*4) + k;
-						if (tiles[jndex] === 0) {
-							tiles[jndex] = tiles[index];
-							styles[jndex] = styles[index];
-							tiles[index] = 0;
-							styles[index] = 0;
-							moveState = true;
-							break;
-						}
-					}
-				}
-			}
+		for (let i=0; i<direction; ++i) {
+			rotated = this.rotateRight(tiles, styles);
+			tiles = rotated[0];
+			styles = rotated[1];
 		}
 
 		this.setState({
@@ -356,22 +273,7 @@ class GameContainer extends React.Component {
 
 		if (!gameOver && event.keyCode >= 37 && event.keyCode <= 40) {
 			this.clearStyles();		// this have a little problem.
-			switch (event.keyCode) {
-				case 37:	// press left arrow key.
-					this.pressLeft();
-					break;
-				case 38:	// press up arrow key.
-					this.pressUp();
-					break;
-				case 39:	// press right arrow key.
-					this.pressRight();
-					break;
-				case 40:	// press down arrow key.
-					this.pressDown();
-					break;
-				default:
-					break;
-			}
+			this.handleLeft(event.keyCode-37);
 
 			if (moveState) {
 				this.createNewTile();
@@ -400,7 +302,6 @@ class GameContainer extends React.Component {
 		if (random === -1) {
 			return random;
 		}
-
 		return blanks[random];
 	}
 
@@ -423,7 +324,6 @@ class GameContainer extends React.Component {
 				}
 			}
 		}
-
 		return false;
 	}
 
@@ -440,19 +340,10 @@ class GameContainer extends React.Component {
 	}
 
 	tryAgain() {
-		const tiles = Array(16).fill(0);
-		const styles = Array(16).fill(0);
-
-		let index = this.findBlank(tiles);
-		tiles[index] = 2;
-		styles[index] = 1;
-		index = this.findBlank(tiles);
-		tiles[index] = 2;
-		styles[index] = 1;
-
+		const newTiles = this.startTiles();
 		this.setState({
-			tiles: tiles,
-			styles: styles,
+			tiles: newTiles[0],
+			styles: newTiles[1],
 			gameOver: false,
 			gameScore: 0
 		});
@@ -512,32 +403,3 @@ ReactDOM.render(
   <Container />,
 	document.getElementById('root')
 );
-
-var moveState;
-
-// range : range to gerate random number.
-// return value : If success, return random number. If failed, return -1. 
-function getRandomNum(range) {
-	if (range > 0 && range <= 16) {
-		return (Math.floor(Math.random() * range));
-	}
-
-	return -1;
-}
-
-// return new array with value 0 from original array
-function extractBlank(tiles) {
-	let blanks = [];
-
-	for (let i=0; i<tiles.length; i++) {
-		if (tiles[i] === 0) {
-			blanks.push(i);
-		}
-	}
-
-	return blanks;
-}
-
-function isFull(tiles) {
-	return tiles.every((value) => {return value !== 0;});
-}
