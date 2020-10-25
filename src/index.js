@@ -26,7 +26,7 @@ function extractBlank(tiles) {
 }
 
 function isFull(tiles) {
-	return tiles.every((value) => {return value !== 0;});
+	return tiles.every((value) => value !== 0);
 }
 
 function Heading() {
@@ -188,7 +188,7 @@ class GameContainer extends React.Component {
 		for (let i=0; i<4; i++) {
 			for (let j=0; j<4; j++) {
 				newTiles[i*4+3-j] = tiles[j*4+i];
-				newStyles[i*4+3-j] = tiles[j*4+i];
+				newStyles[i*4+3-j] = styles[j*4+i];
 			}
 		}
 
@@ -202,7 +202,7 @@ class GameContainer extends React.Component {
 		for (let i=0; i<4; i++) {
 			for (let j=0; j<4; j++) {
 				newTiles[j*4+i] = tiles[i*4+3-j];
-				newStyles[j*4+i] = tiles[i*4+3-j];
+				newStyles[j*4+i] = styles[i*4+3-j];
 			}
 		}
 
