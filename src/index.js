@@ -49,25 +49,21 @@ function ControlButtions(props) {
 	);
 }
 
-class GemaeMessage extends React.Component {
-  render() {
-		const gameOver = this.props.gameOver;
-		let gameOverCSS = "game-message";
+function GemaeMessage(props) {
+	let gameOverCSS = "game-message";
 
-		if (gameOver) {
-			gameOverCSS += " game-over";
-		}
-
-    return (
-      <div className={gameOverCSS}>
+	if (props.gameOver) {
+		gameOverCSS += " game-over";
+	}
+  return (
+    <div className={gameOverCSS}>
 		  <p>Game over!</p>
 		  <div className="lower">
 			  <a className="keep-playing-button">Keep going</a>
-			  <a className="retry-button" onClick={this.props.onClick}>Try again</a>
+			  <a className="retry-button" onClick={props.onClick}>Try again</a>
 		  </div>
 	  </div>
-    );
-  }
+	);
 }
 
 class GridContainer extends React.Component {
